@@ -77,7 +77,6 @@ export const htmlSrcset = (inputOptions: InputOptions = {}): Transformer => {
         return x.join('.')
       })()
 
-      let origext = origSrc.split('.').slice(-1)[0];
       const sizes: number[] = []
 
       options.sizes.forEach(size => {
