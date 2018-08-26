@@ -110,9 +110,16 @@ export const htmlSrcset = (inputOptions: InputOptions = {}): Transformer => {
       })
 
       $el.attr('src', origSrc)
-      var el_picture_html = "<picture>" + source_html + "</picture>";
+
+      // I'd rather use something like `$el.appendTo(el_picture)`
+      // to move the <img> inside of the <picture>, but I can't
+      // get it to work in Cheerio :(
+      var el_picture_html = "<picture>" + source_html;
+      el_picture_html += $.html(el);
+      el_picture_html += "</picture>";
       var el_picture = $.parseHTML(el_picture_html);
       $el.after(el_picture);
+      $el.remove();
     })
   }
 }
