@@ -79,6 +79,7 @@ export const htmlSrcset = (inputOptions: InputOptions = {}): Transformer => {
         return
       }
 
+      let origext = origSrc.split('.').slice(-1)[0];
       const sizes: number[] = []
 
       options.sizes.forEach(size => {
@@ -87,20 +88,31 @@ export const htmlSrcset = (inputOptions: InputOptions = {}): Transformer => {
         }
       })
 
-      const srcset: string[] = []
+      let srcset: string[] = []
 
-      sizes.forEach(size => {
-        options.format.forEach(ext => {
+      var source_html = '';
+			options.format.forEach(ext => {
+				source_html += '<source ';
+				if(ext != origext)
+				{
+					source_html += 'type="image/' + ext + '"';
+				}
+				sizes.forEach(size => {
           if (size === 1) {
             srcset.push(`${filename}.${ext} ${origSize}${dir}`)
           } else {
             srcset.push(`${filename}${options.prefix}${size}${options.postfix}.${ext} ${size}${dir}`)
           }
         })
+        source_html += ' srcset="' + srcset.join(', ') + '"';
+        source_html += '/>';
+        srcset = [];
       })
 
-      $el.attr('srcset', srcset.join(', '))
       $el.attr('src', origSrc)
+      var el_picture_html = "<picture>" + source_html + "</picture>";
+      var el_picture = $.parseHTML(el_picture_html);
+      $el.after(el_picture);
     })
   }
 }
