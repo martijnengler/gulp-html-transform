@@ -58,12 +58,18 @@ export const htmlSrcset = (inputOptions: InputOptions = {}): Transformer => {
   }
 
   return async ($: CheerioStatic) => {
-    $('img[srcset]').each((i, el) => {
+    $('img[src]').each((i, el) => {
       const $el = $(el)
-      const origSrcset = $el.attr('srcset')
       let origSize: number | string
       let origSrc: string
-      [origSrc, origSize] = origSrcset.split(/\s/)
+
+			origSrc = $(el).attr('src');
+			var sizeOf = require('image-size');
+			var dimensions = sizeOf('public/' + origSrc);
+			origSize = dimensions.width;
+			// dir should be either 'w' or 'h'
+			// we can hardcode for 'w' now
+			let dir = 'w';
 
       let filename = (() => {
         let x = origSrc.split('.')
@@ -71,14 +77,7 @@ export const htmlSrcset = (inputOptions: InputOptions = {}): Transformer => {
         return x.join('.')
       })()
 
-      let dir = origSize.slice(-1)
-      if (['w', 'h'].indexOf(dir) !== -1) {
-        origSize = origSize.slice(0, origSize.length - 1)
-      } else {
-        console.warn('Invalid srcset: ', origSrcset)
-        return
-      }
-
+      let origext = origSrc.split('.').slice(-1)[0];
       const sizes: number[] = []
 
       options.sizes.forEach(size => {
